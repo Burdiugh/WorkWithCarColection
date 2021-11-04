@@ -27,7 +27,6 @@ namespace WorkWithCarColection
         public Form1()
         {
             InitializeComponent();
-            Load();
         }
 
         private void addButton_Click(object sender, EventArgs e)
@@ -80,26 +79,33 @@ namespace WorkWithCarColection
             Car car = carsBox.SelectedItem as Car;
             MessageBox.Show(car.Show(),"Info!",MessageBoxButtons.OK,MessageBoxIcon.Information);
         }
-        private void Load()
-        {
-            using (FileStream fs = new FileStream(path, FileMode.Open))
-            {
-                cars = (List<Car>)objBinaryFormatter.Deserialize(fs);
-            }
-            Update();
-        }
+        
         private void saveButton_Click(object sender, EventArgs e)
         {
-            using (Stream obj = new FileStream(path,FileMode.OpenOrCreate))
+            SaveFileDialog sf = new SaveFileDialog();
+            sf.Filter = "All Files|*.*";
+                if (sf.ShowDialog()==DialogResult.OK)
             {
-                objBinaryFormatter.Serialize(obj, cars);
+                using (Stream obj = new FileStream(sf.FileName, FileMode.OpenOrCreate))
+                {
+                    objBinaryFormatter.Serialize(obj, cars);
+                }
             }
+             
+           
         }
         private void loadButton_Click(object sender, EventArgs e)
         {
-            using (FileStream fs = new FileStream(path,FileMode.Open))
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "|*.dat*";
+            if (ofd.ShowDialog() == DialogResult.OK)
             {
-                cars = (List<Car>)objBinaryFormatter.Deserialize(fs);
+                string path = ofd.FileName;
+                using (FileStream fs = new FileStream(ofd.FileName, FileMode.Open))
+                {
+                    if (fs.Length > 0)
+                        cars = (List<Car>)objBinaryFormatter.Deserialize(fs);
+                }
             }
             Update();
         }
